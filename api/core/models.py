@@ -81,7 +81,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     user_id = models.BigAutoField(primary_key=True)
     organization = models.ForeignKey(
-        Organization, related_name="organizations", on_delete=models.CASCADE
+        Organization, related_name="organizations", on_delete=models.CASCADE, null=True, blank=True
     )
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
