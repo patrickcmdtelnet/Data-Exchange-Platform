@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.utils.translation import gettext_lazy as _
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from core.managers import UserManager
 from core.common import DateTimeStampMixin
@@ -18,7 +19,6 @@ from utils.constants import (
 
 
 class PrivateSector(DateTimeStampMixin):
-    ps_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -26,7 +26,6 @@ class PrivateSector(DateTimeStampMixin):
 
 
 class PublicSector(DateTimeStampMixin):
-    ps_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -34,7 +33,6 @@ class PublicSector(DateTimeStampMixin):
 
 
 class Academia(DateTimeStampMixin):
-    ac_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -45,7 +43,6 @@ class Ministry(DateTimeStampMixin):
     class Meta:
         verbose_name_plural = "ministries"
 
-    min_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -58,7 +55,6 @@ class Organization(DateTimeStampMixin):
         PUBLIC_SECTOR = PUBLIC_SECTOR, _("Public Sector")
         ACADEMIA = ACADEMIA, _("Academia")
 
-    organization_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100)
     type = models.CharField(
         max_length=30,
@@ -79,9 +75,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         CONTACT_ADMIN = SUPER_ADMIN, _("Contact Admin")
         USER_ROLE = "USER", _("User")
 
-    user_id = models.BigAutoField(primary_key=True)
     organization = models.ForeignKey(
-        Organization, related_name="organizations", on_delete=models.CASCADE, null=True, blank=True
+        Organization,
+        related_name="organizations",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -110,3 +109,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }

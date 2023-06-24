@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,8 +25,11 @@ SECRET_KEY = "django-insecure-2+_otpanozjf-(aktt(mc*tpdietn54@2$4c&4#+3quw+-5ham
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "https://8000-patrickcmdt-dataexchang-iwogec3smdp.ws-eu100.gitpod.io",
+]
 
 # Application definition
 
@@ -37,6 +40,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "drf_yasg",
+    "django_extensions",
+    "corsheaders",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    "accounts",
     "core",
     "utils",
 ]
@@ -44,6 +54,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -125,3 +136,43 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "core.User"
+USER_ID_FIELD = "user_id"
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True
+
+# Rest_framework
+REST_FRAMEWORK = {
+    "NON_FIELD_ERRORS_KEY": "error",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
+
+# SIMPLE JWT
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=86400),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+# Swagger
+SWAGGER_SETTINGS = {
+    "SHOW_REQUEST_HEADERS": True,
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}
+    },
+    "USE_SESSION_AUTH": False,
+    "JSON_EDITOR": True,
+    "SUPPORTED_SUBMIT_METHODS": ["get", "post", "put", "delete", "patch"],
+}
+
+# EMAILS
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = "smtp.gmail.com",
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = os.environ.get(EMAIL_HOST_USER)
+# EMAIL_HOST_PASSWORD = os.environ.get(EMAIL_HOST_PASSWORD)
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

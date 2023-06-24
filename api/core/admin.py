@@ -8,7 +8,7 @@ from core import models
 class UserAdmin(BaseUserAdmin):
     """Define the admin pages for users."""
 
-    ordering = ["user_id"]
+    ordering = ["id"]
     list_display = (
         "email",
         "first_name",
@@ -16,6 +16,7 @@ class UserAdmin(BaseUserAdmin):
         "phone_number",
         "is_staff",
         "is_active",
+        "is_verified",
     )
     list_filter = (
         "is_staff",
@@ -38,6 +39,7 @@ class UserAdmin(BaseUserAdmin):
                 "fields": (
                     "first_name",
                     "last_name",
+                    "organization",
                 )
             },
         ),
@@ -51,7 +53,9 @@ class UserAdmin(BaseUserAdmin):
                 "fields": (
                     "is_active",
                     "is_staff",
+                    "is_verified",
                     "is_superuser",
+                    "permission_level",
                 ),
             },
         ),
@@ -76,6 +80,7 @@ class UserAdmin(BaseUserAdmin):
                     "is_active",
                     "is_staff",
                     "is_superuser",
+                    "is_verified",
                 ),
             },
         ),
@@ -90,31 +95,31 @@ class UserAdmin(BaseUserAdmin):
 
 
 class PrivateSectorAdmin(admin.ModelAdmin):
-    list_display = ("ps_id", "name")
+    list_display = ("id", "name")
     list_filter = ("created_date",)
     search_fields = ("name",)
 
 
 class PublicSectorAdmin(admin.ModelAdmin):
-    list_display = ("ps_id", "name")
+    list_display = ("id", "name")
     list_filter = ("created_date",)
     search_fields = ("name",)
 
 
 class AcademiaAdmin(admin.ModelAdmin):
-    list_display = ("ac_id", "name")
+    list_display = ("id", "name")
     list_filter = ("created_date",)
     search_fields = ("name",)
 
 
 class MinistryAdmin(admin.ModelAdmin):
-    list_display = ("min_id", "name")
+    list_display = ("id", "name")
     list_filter = ("created_date",)
     search_fields = ("name",)
 
 
 class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ("organization_id", "name", "type", "acronym")
+    list_display = ("id", "name", "type", "acronym")
     list_filter = ("created_date", "type")
     search_fields = ("name", "acronym")
 
