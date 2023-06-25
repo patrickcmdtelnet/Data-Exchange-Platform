@@ -1,40 +1,30 @@
 import os
 
-from rest_framework import generics, status, views, permissions
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
 import jwt
 from django.conf import settings
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from django.utils.encoding import (
-    smart_str,
-    force_str,
-    smart_bytes,
-    DjangoUnicodeDecodeError,
-)
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.shortcuts import redirect
-from django.http import HttpResponsePermanentRedirect
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpResponsePermanentRedirect
+from django.urls import reverse
+from django.utils.encoding import DjangoUnicodeDecodeError, smart_str
+from django.utils.http import urlsafe_base64_decode
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import generics, permissions, serializers, status, views
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
-
+from accounts.renderers import UserRenderer
 from accounts.serializers import (
-    RegisterSerializer,
     EmailVerificationSerializer,
-    ResetPasswordEmailRequestSerializer,
     LoginSerializer,
-    SetNewPasswordSerializer,
     LogoutSerializer,
+    RegisterSerializer,
+    ResetPasswordEmailRequestSerializer,
+    SetNewPasswordSerializer,
 )
 from utils.utils import Util
-from accounts.renderers import UserRenderer
-from core.models import Organization
 
 User = get_user_model()
 
@@ -155,9 +145,13 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
 
 
 class PasswordTokenCheckAPI(generics.GenericAPIView):
+    def get_serializer_class(self):
+        return None
+
     @swagger_auto_schema(tags=["Auth"])
     def get(self, request, uidb64, token):
-        redirect_url = request.GET.get("redirect_url")
+        redirect_url = request.data.get("redirect_url")
+        print(redirect_url)
 
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))

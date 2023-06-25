@@ -1,18 +1,13 @@
-from rest_framework import serializers
 from django.contrib import auth
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import (
-    smart_str,
-    force_str,
-    smart_bytes,
-    DjangoUnicodeDecodeError,
-)
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-from django.contrib.auth import get_user_model
+from django.utils.encoding import force_str, smart_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from utils.utils import Util
 
@@ -130,7 +125,8 @@ class ResetPasswordEmailRequestSerializer(serializers.Serializer):
 
             current_site = get_current_site(request=self.context.get("request")).domain
             relative_link = reverse(
-                "password-reset-confirm", kwargs={"uidb64": uidb64, "token": token}
+                "accounts:password-reset-confirm",
+                kwargs={"uidb64": uidb64, "token": token},
             )
             absolute_url = f"http://{current_site}{relative_link}"
             email_body = f"Hello, \nUse the link below to reset your account password. \n{absolute_url}"
@@ -155,6 +151,7 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         try:
+            print(attrs)
             password = attrs.get("password", "")
             token = attrs.get("token", "")
             uidb64 = attrs.get("uidb64", "")

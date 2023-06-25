@@ -1,15 +1,16 @@
 import factory
-from factory.django import DjangoModelFactory
 from django.utils.translation import gettext_lazy as _
+from factory.django import DjangoModelFactory
+from faker import Faker
+
 from core.models import (
-    PrivateSector,
-    PublicSector,
     Academia,
     Ministry,
     Organization,
+    PrivateSector,
+    PublicSector,
     User,
 )
-from faker import Faker
 
 fake = Faker()
 
